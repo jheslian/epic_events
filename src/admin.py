@@ -1,25 +1,21 @@
 from django.contrib import admin
-from .models import User, Client, Contract, Event
+from .models import  Client, Contract, Event
 
 
 # Register your models here.
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'last_name', 'last_name')
-
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('client', 'with_contract')
+    list_display = ('last_name', 'first_name', 'email', 'sales_contact', 'with_contract')
 
 
 class ContractAdmin(admin.ModelAdmin):
-    list_display = ('client', 'sales_contact')
+    list_display = ('client', 'signed')
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('name', 'client', 'date_of_event')
+    list_display = ('name', 'support_contact', 'date_of_event')
 
 
-admin.site.register(User, UserAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Contract, ContractAdmin)
