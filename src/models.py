@@ -10,7 +10,8 @@ class Client(models.Model):
     telephone_number = models.IntegerField(blank=True, null=True)
     mobile_number = models.IntegerField(blank=True, null=True)
     with_contract = models.BooleanField(default=False)
-    sales_contact = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sales_contact')
+
+    # sales_contact = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sales_contact')
 
     def __str__(self):
         return self.email
@@ -34,8 +35,7 @@ class Event(models.Model):
     location = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(max_length=500, blank=True, null=True)
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True)
-    support_contact = models.ForeignKey(User, on_delete=models.CASCADE, related_name='support_contact', blank=True,
-                                        null=True)
+    # support_contact = models.ForeignKey(User, on_delete=models.CASCADE, related_name='support_contact', blank=True,null=True)
     date_of_event = models.DateTimeField(blank=True, null=True)
     last_day_of_event = models.DateTimeField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now=True)
@@ -43,3 +43,12 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class StatusContract(models.Model):
+    # client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    sales_contact = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True,
+                                      related_name='sales_contact')
+    support_contact = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True,
+                                        related_name='support_contact')

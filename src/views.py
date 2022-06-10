@@ -1,11 +1,12 @@
 from collections import OrderedDict
 
+from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Client, Contract, Event
+from .models import User, Client, Contract, Event, StatusContract
 from rest_framework import generics
 from rest_framework.response import Response
-from .permissions import IsInSalesOrManagement, IsInSupportOrManagement
+from .permissions import SalesContactPermission, TeamsPermission
 from .serializers import ClientSerializer, ContractSerializer, EventSerializer
 from datetime import datetime
 
@@ -13,13 +14,16 @@ from datetime import datetime
 class ClientView(generics.ListCreateAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = [IsAuthenticated, IsInSalesOrManagement]
-    search_fields = ['first_name', 'last_name', 'email']
+    permission_classes = [IsAuthenticated, SalesContactPermission]
     filterset_fields = ['last_name', 'email']
 
-    def perform_create(self, serializer):
-        sales_contact = get_object_or_404(User, id=self.request.user.id)
-        return serializer.save(sales_contact=sales_contact)
+    """def get_queryset(self):
+        user = Group.objects.get(user=self.request.user)
+        if str(user.name) == 'sales':
+
+            status_contract = StatusContract.objects.filter(sales_contact=self.request.user)
+            clients = [obj.contra.id for obj in status_contract]
+        return self.queryset.filter(id in clients)"""
 
     def create(self, request, *args, **kwargs):
         super().create(request, *args, **kwargs)
@@ -29,7 +33,7 @@ class ClientView(generics.ListCreateAPIView):
 class ClientDetailView(generics.RetrieveUpdateAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = [IsAuthenticated, IsInSalesOrManagement]
+    permission_classes = [IsAuthenticated, TeamsPermission]
     lookup_url_kwarg = 'client_id'
 
     def update(self, request, *args, **kwargs):
@@ -44,7 +48,7 @@ class ClientDetailView(generics.RetrieveUpdateAPIView):
 class ContractView(generics.ListCreateAPIView):
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
-    permission_classes = [IsAuthenticated, IsInSalesOrManagement]
+    permission_classes = [IsAuthenticated, SalesContactPermission]
     filterset_fields = {
         'client__last_name': ['exact', 'contains'],
         'client__email': ['exact'],
@@ -52,6 +56,11 @@ class ContractView(generics.ListCreateAPIView):
         'amount': ['exact', 'gt'],
         'date_created': ['gte', 'lte'],
     }
+
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        StatusContract.objects.create(contract=obj)
+        return serializer
 
     def create(self, request, *args, **kwargs):
         """ Customise contract
@@ -65,6 +74,9 @@ class ContractView(generics.ListCreateAPIView):
             data['client'] = client.id
             if data['signed'] is 'true':
                 data['date_signed'] = datetime.now()
+
+
+
         except Exception as e:
             print(e)
         serializer = self.get_serializer(data=data)
@@ -79,7 +91,7 @@ class ContractView(generics.ListCreateAPIView):
 class ContractDetailView(generics.RetrieveUpdateAPIView):
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
-    permission_classes = [IsAuthenticated, IsInSalesOrManagement]
+    permission_classes = [IsAuthenticated, SalesContactPermission]
     lookup_url_kwarg = 'contract_id'
 
     def update(self, request, *args, **kwargs):
@@ -94,7 +106,7 @@ class ContractDetailView(generics.RetrieveUpdateAPIView):
 class EventView(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated, IsInSupportOrManagement]
+    permission_classes = [IsAuthenticated, TeamsPermission]
     filterset_fields = {
         'contract__client__last_name': ['exact'],
         'contract__client__email': ['exact'],
@@ -121,7 +133,7 @@ class EventView(generics.ListCreateAPIView):
 class EventDetailView(generics.RetrieveUpdateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated, IsInSupportOrManagement]
+    permission_classes = [IsAuthenticated, TeamsPermission]
     lookup_url_kwarg = 'event_id'
 
     def update(self, request, *args, **kwargs):
