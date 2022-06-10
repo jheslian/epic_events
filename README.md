@@ -65,7 +65,7 @@ After lauching the postgreSQL:
 	[![Screenshot-2022-06-10-at-09-13-31.png](https://i.postimg.cc/65f4GRj9/Screenshot-2022-06-10-at-09-13-31.png)](https://postimg.cc/tY74K1Gf)
 	* sales
     
-	[![Screenshot-2022-06-10-at-09-15-12.png](https://i.postimg.cc/t4fq14jq/Screenshot-2022-06-10-at-09-15-12.png)](https://postimg.cc/TKVMFG1F)
+	[![Screenshot-2022-06-10-at-10-16-48.png](https://i.postimg.cc/YqBWTBq0/Screenshot-2022-06-10-at-10-16-48.png)](https://postimg.cc/G9ztsNDn)
 	
 	* support
     
