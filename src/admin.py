@@ -1,15 +1,14 @@
 from django.contrib import admin
 from .models import Client, Contract, Event, StatusContract
 
-
 # Register your models here.
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name', 'email', 'with_contract')
+    list_display = ('id', 'last_name', 'first_name', 'email', 'with_contract')
 
 
 class ContractAdmin(admin.ModelAdmin):
-    list_display = ('client', 'signed', 'amount')
+    list_display = ('id', 'client', 'signed', 'amount')
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -26,8 +25,9 @@ class StatusContractAdmin(admin.ModelAdmin):
         return obj.contract.signed
 
     get_contract.short_description = 'contract'  # Renames column head
+
+
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Contract, ContractAdmin)
 admin.site.register(StatusContract, StatusContractAdmin)
-

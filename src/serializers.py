@@ -30,7 +30,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['id', 'name', 'location', 'description', 'contract', 'support_contact', 'date_of_event',
+        fields = ['id', 'name', 'location', 'description', 'contract', 'date_of_event',
                   'last_day_of_event', 'date_created']
 
     def to_representation(self, instance):
